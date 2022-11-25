@@ -1,0 +1,40 @@
+ oc projects
+ oc login -u admin -p redhat https://api.ocp4.example.com:6443
+ oc projects
+ history 
+ oc new-project open-cluster-management
+ cd DO480/labs/multicluster-review
+ vim operator-group.yaml 
+ oc create -f operator-group.yaml 
+ vim subscription.yaml 
+ oc create -f subscription.yaml 
+ oc get installplan
+ oc patch installplan CHANGE --type merge --patch '{"spec":{"approved":true}}'
+ oc get csv
+ vim mch.yaml
+ oc create -f mch.yaml 
+ oc get multiclusterhub
+ oc projects| less
+ oc new-project managed-cluster
+ oc label namespace managed-cluster cluster.open-cluster-management.io/managedCluster=managed-cluster
+ oc get multiclusterhub -n open-cluster-management
+ vim mngcluster.yaml 
+ oc create -f mngcluster.yaml 
+ vim klusterlet.yaml 
+ oc get all
+ oc get pod
+ oc create -f klusterlet.yaml 
+ oc get all
+ oc get secret managed-cluster-import -n managed-cluster -o jsonpath={.data.crds\\.yaml} | base64 --decode > klusterlet-crd.yaml
+ ls
+ vim klusterlet-crd.yaml 
+ oc get secret managed-cluster-import -n managed-cluster -o jsonpath={.data.import\\.yaml} | base64 --decode > import.yaml
+ ls
+ vim import.yaml 
+ oc login -u admin -p redhat https://api.ocp4-mng.example.com:6443
+ oc create -f klusterlet-crd.yaml
+ oc create -f import.yaml
+ oc get pod -n open-cluster-management-agent
+ watch oc get pod -n open-cluster-management-agent-addon
+ oc login -u admin -p redhat https://api.ocp4.example.com:6443
+ oc get managedcluster
