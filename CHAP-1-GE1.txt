@@ -1,0 +1,12 @@
+oc get routes.route.openshift.io -n open-cluster-management
+oc config get-contexts
+oc delete project open-cluster-management
+oc delete clusterrole klusterlet
+oc delete clusterrole open-cluster-management:klusterlet-admin-aggregate-clusterrole
+oc delete clusterrolebinding klusterlet
+oc projects
+oc get pod -n hive
+oc login -u admin -p redhat https://api.ocp4-mng.example.com:6443
+oc delete clusterrole klusterlet
+oc delete clusterrole open-cluster-management:klusterlet-admin-aggregate-clusterrole
+oc delete clusterrolebinding klusterlet
