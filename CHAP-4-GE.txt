@@ -1,0 +1,64 @@
+lab start observability-install
+oc login -u admin -p redhat https://api.ocp4.example.com:6443
+oc create namespace open-cluster-management-observability
+DOCKER_CONFIG_JSON=$(oc extract secret/pull-secret -n openshift-config --to=-)
+echo $DOCKER_CONFIG_JSON
+oc create secret generic multiclusterhub-operator-pull-secret -n open-cluster-management-observability --from-literal=.dockerconfigjson="$DOCKER_CONFIG_JSON" --type=kubernetes.io/dockerconfigjson
+cd DO480/labs/observability-install
+oc get all -n open-cluster-management-observability 
+oc create -f obc.yaml 
+oc get all -n open-cluster-management-observability 
+oc get obc
+oc get objectbucketclaim
+oc get obc -n open-cluster-management-observability 
+oc extract configmap/thanos-bc -n open-cluster-management-observability --to=-
+oc extract secret/thanos-bc -n open-cluster-management-observability --to=-
+vim secret.yaml 
+oc create -f secret.yaml 
+oc create -f mcobs.yaml 
+oc get all -n open-cluster-management-observability 
+oc login -u admin -p redhat https://api.ocp4-mng.example.com:6443
+oc get all -n open-cluster-management-addon-observability 
+oc login -u admin -p redhat https://api.ocp4.example.com:6443
+oc label managedcluster managed-cluster observability=disabled -n open-cluster-management
+oc login -u admin -p redhat https://api.ocp4-mng.example.com:6443
+oc get all -n open-cluster-management-addon-observability 
+oc login -u admin -p redhat https://api.ocp4.example.com:6443
+lab finish observability-install
+
+
+lab start observability-customize
+oc login -u admin -p redhat https://api.ocp4.example.com:6443
+oc get all -n open-cluster-management-observability 
+oc get mcb -n open-cluster-management-observability 
+oc get all -n open-cluster-management-observability 
+cd DO480/labs/observability-customize
+vim custom-rules.yaml 
+oc apply -f custom-rules.yaml -n open-cluster-management-observability
+oc get all -n open-cluster-management-observability 
+cd
+oc login -u admin -p redhat https://api.ocp4.example.com:6443
+oc delete multiclusterobservability observability
+oc delete namespace open-cluster-management-observability
+lab finish observability-customize
+
+
+ start observability-review
+oc login -u admin -p redhat https://api.ocp4.example.com:6443
+oc create namespace open-cluster-management-observability
+DOCKER_CONFIG_JSON=$(oc extract secret/pull-secret -n openshift-config --to=-)
+oc create secret generic multiclusterhub-operator-pull-secret -n open-cluster-management-observability --from-literal=.dockerconfigjson="$DOCKER_CONFIG_JSON" --type=kubernetes.io/dockerconfigjson
+cd DO480/labs/observability-review
+oc create -f obc.yaml 
+oc extract configmap/thanos-bc -n open-cluster-management-observability --to=-
+oc extract secret/thanos-bc -n open-cluster-management-observability --to=-
+vi secret.yaml 
+oc create -f secret.yaml 
+oc project
+vi secret.yaml 
+oc create -f mcobs.yaml 
+oc apply -f custom-rules.yaml -n open-cluster-management-observability
+oc get pod -n open-cluster-management-observability 
+cd
+lab grade observability-review
+lab finish observability-review
