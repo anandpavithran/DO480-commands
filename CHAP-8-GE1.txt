@@ -1,0 +1,21 @@
+lab start rhacs-install
+oc login -u admin -p redhat https://api.ocp4.example.com:6443
+oc new-project rhacs-install
+cd ~/DO480/labs/rhacs-install/
+vim policy-rhacs-operator-install.yaml 
+oc create -f policy-rhacs-operator-install.yaml -n rhacs-install
+oc get policy
+oc get all -n stackrox 
+oc get all -n rhacs-operator 
+oc get all -n stackrox 
+oc get csv
+oc get sub -A
+vim policy-rhacs-operator-central.yaml 
+oc create -f policy-rhacs-operator-central.yaml -n rhacs-install
+oc get csv
+oc get all -n stackrox 
+oc whoami --show-console
+sudo grep Test /var/log/remote/central.log
+sudo grep authProviders /var/log/remote/central.log
+cd
+lab finish rhacs-install
