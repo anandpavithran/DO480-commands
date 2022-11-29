@@ -1,0 +1,12 @@
+oc login -u cloudadmin -p redhat https://api.ocp4.example.com:6443
+cd DO480/labs/quay-deploy
+vim config.yaml 
+oc create namespace registry
+oc create secret generic --from-file config.yaml=./config.yaml --from-file ldap.crt=./ldap.crt init-config-bundle-secret -n registry
+oc apply -f quay-registry.yaml
+oc get pods -n registry| grep central-quay-app
+oc get all -n registry
+vim Containerfile
+podman build . -t hello-to-quay:dev
+podman login -u=cloudadmin -p=redhat central-quay-registry.apps.ocp4.example.com
+podman push localhost/hello-to-quay:dev central-quay-registry.apps.ocp4.example.com/cloudadmin/hello-to-quay:dev
