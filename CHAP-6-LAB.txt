@@ -1,0 +1,28 @@
+lab start quay-review
+oc login -u admin -p redhat https://api.ocp4.example.com:6443
+cd DO480/solutions/quay-review/
+oc create -f subscription.yaml
+oc create namespace registry
+watch oc get deployment -n openshift-operators
+vim config.yaml 
+oc create secret generic --from-file config.yaml=./config.yaml init-config-bundle-secret -n registry
+oc create -f quay-registry.yaml
+watch oc get deployment -n registry
+cat quayadmin-user.json 
+curl -X POST -k https://central-quay-registry.apps.ocp4.example.com/api/v1/user/initialize --header "Content-Type: application/json" --data @quayadmin-user.json
+HOME DIRECTORY
+echo BF07Q5XG48136FU6YZHX4U2PDFVBR7EORVTV0CDW > quayadmin_token
+cat quayadmin_token 
+QUAYADMIN_TOKEN=BF07Q5XG48136FU6YZHX4U2PDFVBR7EORVTV0CDW
+cd DO480/solutions/quay-review/
+curl -X POST -k https://central-quay-registry.apps.ocp4.example.com/api/v1/organization/ --header "Content-Type: application/json" --header "Authorization: Bearer $QUAYADMIN_TOKEN" --data @finance-organization.json
+curl -X POST -k https://central-quay-registry.apps.ocp4.example.com/api/v1/repository --header "Content-Type: application/json" --header "Content-Type: application/json" --header "Authorization: Bearer $QUAYADMIN_TOKEN" --data @budget-app-dev-repository.json
+curl -X PUT -k https://central-quay-registry.apps.ocp4.example.com/api/v1/organization/finance/robots/deployer --header "Content-Type: application/json" --header "Authorization: Bearer $QUAYADMIN_TOKEN" --data @deployer-robot.json
+GET TOKEN 
+curl -X PUT -k https://central-quay-registry.apps.ocp4.example.com/api/v1/repository/finance/budget-app-dev/permissions/user/finance+deployer --header "Content-Type: application/json" --header "Authorization: Bearer $QUAYADMIN_TOKEN" --data '{"role": "write"}'
+cd
+vim Containerfile 
+podman build . -t budget-app:development
+podman login -u=finance+deployer -p tokencollected central-quay-registry.apps.ocp4.example.com
+podman push localhost/budget-app:development central-quay-registry.apps.ocp4.example.com/finance/budget-app-dev
+lab grade quay-review

@@ -1,0 +1,11 @@
+lab start quay-rbac
+vi Containerfile
+podman build . -t budget-app:development
+cat bob 
+podman login -u=bob -p=password central-quay-registry.apps.ocp4.example.com
+podman login -u=bob -p=redhat central-quay-registry.apps.ocp4.example.com
+podman push localhost/budget-app:development central-quay-registry.apps.ocp4.example.com/finance/budget-app-dev
+podman push localhost/budget-app:development central-quay-registry.apps.ocp4.example.com/finance/budget-app
+skopeo login -u=alice -p=redhat central-quay-registry.apps.ocp4.example.com
+skopeo copy docker://central-quay-registry.apps.ocp4.example.com/finance/budget-app-dev docker://central-quay-registry.apps.ocp4.example.com/finance/budget-app
+lab finish quay-rbac
