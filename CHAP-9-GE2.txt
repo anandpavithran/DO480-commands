@@ -1,0 +1,9 @@
+lab start operate-vulnerability
+oc login -u admin -p redhat https://api.ocp4.example.com:6443
+cd ~/DO480/labs/operate-vulnerability/
+vim etherpad-deployment.yaml 
+oc create -f etherpad-deployment.yaml 
+oc delete -f etherpad-deployment.yaml
+oc create -f etherpad-deployment.yaml
+oc get events -n etherpad | grep debian10-policy
+lab finish operate-vulnerability
